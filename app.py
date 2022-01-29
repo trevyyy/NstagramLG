@@ -29,8 +29,8 @@ Output:
 4. From our space to yours
 5. Designed to be cozy
 ###
-Input: chocolate, espresso martini
-Output: %s"""
+Input: %s
+Output:"""
 
 
 def get_response(text):
