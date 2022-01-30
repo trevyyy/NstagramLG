@@ -100,8 +100,9 @@ def get_style_text(text):
         out = out[-1]
 
     out = out.replace('art print', 'print')
+    out = out.replace('an print', 'a print')
+    out = out.replace('Our', 'This')
     out = re.sub('\bour\b', 'this', out)
-    out = re.sub('\bOur\b', 'This', out)
 
     return out
 
