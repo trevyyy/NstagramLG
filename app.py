@@ -47,7 +47,7 @@ use = """A system that writes about the emotions of colors.
 io = """Input: %s
 Output:"""
 
-style = """Write a creative ad for digital artwork we have designed in the following style:
+style = """Write a creative ad for art prints we have designed in the following style:
 
 Style: %s"""
 
@@ -103,8 +103,8 @@ def get_style_text(text):
 
 
 st.title('Instagram post generator')
-colors = st.text_input('Colors (separate with commas)')
-styles = st.text_input('Styles (separate with commas)')
+colors = st.text_input('Colors', help='Separate each style with commas e.g. "green, brown, beige"')
+styles = st.text_input('Styles', help='Separate each style with commas, e.g. "boho, minimalist, Scandi"')
 
 if 'final_texts' not in st.session_state:
     st.session_state['final_texts'] = []
