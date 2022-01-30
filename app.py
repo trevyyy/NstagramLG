@@ -99,7 +99,11 @@ def get_style_text(text):
         out.sort(key=len)
         out = out[-1]
 
-    return out.replace('art print', 'print')
+    out = out.replace('art print', 'print')
+    out = out.replace('our', 'this')
+    out = out.replace('Our', 'This')
+
+    return out
 
 
 st.title('Instagram post generator')
