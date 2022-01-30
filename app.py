@@ -76,7 +76,7 @@ def get_color_text(text):
 
     out = response['choices'][0]['text'].split('\n')
     out = [i.strip('0123456789. ') for i in out]
-    out = [x.replace('art print', 'print') for x in out if x]
+    out = [x for x in out if x]
 
     return out
 
@@ -99,7 +99,7 @@ def get_style_text(text):
         out.sort(key=len)
         out = out[-1]
 
-    return out
+    return out.replace('art print', 'print')
 
 
 st.title('Instagram post generator')
