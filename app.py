@@ -1,37 +1,9 @@
 import streamlit as st
 import openai
 import random
+from textblob import TextBlob
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
-
-_prompt = """A system that writes Instagram ads for digital prints.
-###
-Input: beige, minimalist, botanical, plant, leaf, abstract
-Output:
-1. Beige? Boring? Nope. 🍂
-2. That botanical feeling
-3. 🧑‍🎨 Your space deserves it
-4. Let the leaves fall
-5. When you need that piece that goes with anything
-###
-Input: Scandinavian, minimalist, burnt orange, Beige, Abstract, Nordic, sunset
-Output:
-1. Cheers 🍊
-2. This is the one
-3. Let's warm things up a bit
-4. 🥵 Warm up your space
-5. Feel the love
-###
-Input: landscape, reflection, purple, gold, mountain
-Output:
-1. Let's head to the mountains 🚠
-2. Time to reflect
-3. Snuggle up and take a tea break 😌
-4. From our space to yours
-5. Designed to be cozy
-###
-Input: %s
-Output:"""
 
 orange = """Input: burnt orange
 Output:
@@ -104,7 +76,7 @@ def get_color_text(text):
 
     out = response['choices'][0]['text'].split('\n')
     out = [i.strip('0123456789. ') for i in out]
-    out = [o for o in out if o]
+    out = [x for x in out if x]
 
     return out
 
@@ -121,9 +93,11 @@ def get_style_text(text):
         presence_penalty=0
     )
 
-    out = response['choices'][0]['text']
-    if not out.startswith('\n'):
-        out = '\n' + out
+    out = response['choices'][0]['text'].strip('\n')
+    if '\n' in out:
+        out = out.split('\n')
+        out.sort(key=len)
+        out = out[-1]
 
     return out
 
@@ -131,6 +105,10 @@ def get_style_text(text):
 st.title('Instagram post generator')
 colors = st.text_input('Colors (separate with commas)')
 styles = st.text_input('Styles (separate with commas)')
+
+if 'final_texts' not in st.session_state:
+    st.session_state['final_texts'] = []
+
 if st.button('Go') and colors and styles:
     color_output = []
     style_output = []
@@ -140,16 +118,28 @@ if st.button('Go') and colors and styles:
     with st.spinner('Building ads...'):
         for c in colors:
             phrases = get_color_text(c)
+            # Remove phrases with negative sentiment scores
+            phrases = [p for p in phrases if TextBlob(p).sentiment.polarity > 0]
             color_output += phrases
         for _ in range(len(color_output)):
             style_output += [get_style_text(styles)]
 
-    final_texts = []
-    for i, c in enumerate(color_output):
-        final_texts += [f'{c} {style_output[i]}']
+        final_texts = []
+        if color_output:
+            for i, c in enumerate(color_output):
+                final_texts += [f'{c}\n\n{style_output[i]}']
+
+        while len(final_texts) < 5:
+            final_texts += [get_style_text(styles)]
 
     random.shuffle(final_texts)
-    for o in final_texts:
-        st.write(o)
-        if o != final_texts[-1]:
-            st.write('-' * 10)
+    st.session_state['final_texts'] = final_texts
+
+for i, o in enumerate(st.session_state['final_texts']):
+    st.write('-' * 10)
+    st.write(o)
+    # col1, col2, _ = st.columns((1, 1, 10))
+    # if col1.button('❤️', key=i):
+    #     pass
+    # if col2.button('👎🏼', key=f'{i}_'):
+    #     pass
