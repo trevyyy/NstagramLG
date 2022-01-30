@@ -85,7 +85,7 @@ def get_style_text(text):
 
     response = openai.Completion.create(
         engine="text-davinci-001",
-        prompt=style % text,
+        prompt=style % text.replace(' | ', ', '),
         temperature=1,
         max_tokens=60,
         top_p=1,
@@ -109,7 +109,7 @@ def get_style_text(text):
 
 st.title('Instagram post generator')
 colors = st.text_input('Colors', help='Separate each style with commas e.g. "green, brown, beige"')
-styles = st.text_input('Styles', help='Separate each style with commas, e.g. "boho, minimalist, Scandi"')
+styles = st.text_input('Styles', help='Separate each style with pipes, e.g. "boho | minimalist | Scandi"')
 styles = f'{styles}, {colors}'
 
 if 'final_texts' not in st.session_state:
