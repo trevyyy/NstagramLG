@@ -2,8 +2,7 @@ import streamlit as st
 import openai
 import random
 
-# openai.api_key = st.secrets["OPENAI_API_KEY"]
-openai.api_key = "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"
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 _prompt = """A system that writes Instagram ads for digital prints.
 ###
