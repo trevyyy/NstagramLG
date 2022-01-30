@@ -1,7 +1,7 @@
 import streamlit as st
 import openai
 import random
-from textblob import TextBlob
+import re
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
@@ -100,8 +100,8 @@ def get_style_text(text):
         out = out[-1]
 
     out = out.replace('art print', 'print')
-    out = out.replace('our', 'this')
-    out = out.replace('Our', 'This')
+    out = re.sub('\bour\b', 'this', out)
+    out = re.sub('\bOur\b', 'This', out)
 
     return out
 
