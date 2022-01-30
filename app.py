@@ -60,7 +60,7 @@ def get_color_text(text):
         if text not in i:
             prompt += i
             count += 1
-    if count > 3:
+    if count < 3:
         prompt += beige
     prompt += io
 
