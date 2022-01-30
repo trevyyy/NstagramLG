@@ -1,5 +1,6 @@
 import streamlit as st
 import openai
+import random
 
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
@@ -74,8 +75,12 @@ use = """A system that writes about the emotions of colors.
 io = """Input: %s
 Output:"""
 
+style = """Write a creative ad for digital artwork we have designed in the following style:
 
-def get_response(text):
+Style: %s"""
+
+
+def get_color_text(text):
 
     prompt = use
     count = 0
@@ -91,7 +96,7 @@ def get_response(text):
         engine="text-davinci-001",
         prompt=prompt % text,
         temperature=1,
-        max_tokens=200,
+        max_tokens=60,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
@@ -103,16 +108,39 @@ def get_response(text):
     return out
 
 
+def get_style_text(text):
+
+    response = openai.Completion.create(
+        engine="text-davinci-001",
+        prompt=style % text,
+        temperature=1,
+        max_tokens=60,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
+    )
+
+    return response['choices'][0]['text']
+
+
 st.title('Instagram post generator')
-input_text = st.text_input('Colors (separate with commas)')
-if input_text:
-    output = []
-    colors = [i.strip() for i in input_text.split(',')]
+colors = st.text_input('Colors (separate with commas)')
+styles = st.text_input('Styles (separate with commas)')
+if st.button('Go') and colors and styles:
+    color_output = []
+    style_output = []
+    colors = [i.strip() for i in colors.split(',')]
 
     with st.spinner('Building ads...'):
         for c in colors:
-            phrases = get_response(c)
-            output += phrases
+            phrases = get_color_text(c)
+            color_output += phrases
+        for _ in range(len(color_output)):
+            style_output += [get_style_text(styles)]
 
-    for o in output:
+    final_texts = []
+    for i, c in enumerate(color_output):
+        final_texts += [f'{c} {style_output[i]}']
+    random.shuffle(final_texts)
+    for o in final_texts:
         st.write(o)
