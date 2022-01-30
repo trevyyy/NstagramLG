@@ -2,7 +2,8 @@ import streamlit as st
 import openai
 import random
 
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# openai.api_key = st.secrets["OPENAI_API_KEY"]
+openai.api_key = "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"
 
 _prompt = """A system that writes Instagram ads for digital prints.
 ###
@@ -104,6 +105,7 @@ def get_color_text(text):
 
     out = response['choices'][0]['text'].split('\n')
     out = [i.strip('0123456789. ') for i in out]
+    out = [o for o in out if o]
 
     return out
 
@@ -131,6 +133,7 @@ if st.button('Go') and colors and styles:
     style_output = []
     colors = [i.strip() for i in colors.split(',')]
 
+    # GPT-3
     with st.spinner('Building ads...'):
         for c in colors:
             phrases = get_color_text(c)
@@ -141,6 +144,9 @@ if st.button('Go') and colors and styles:
     final_texts = []
     for i, c in enumerate(color_output):
         final_texts += [f'{c} {style_output[i]}']
+
     random.shuffle(final_texts)
     for o in final_texts:
         st.write(o)
+        if o != final_texts[-1]:
+            st.write('-' * 10)
