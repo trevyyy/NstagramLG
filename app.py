@@ -121,7 +121,11 @@ def get_style_text(text):
         presence_penalty=0
     )
 
-    return response['choices'][0]['text']
+    out = response['choices'][0]['text']
+    if not out.starstwith('\n'):
+        out = '\n' + out
+    
+    return out
 
 
 st.title('Instagram post generator')
