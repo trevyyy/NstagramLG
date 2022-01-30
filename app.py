@@ -119,7 +119,7 @@ if st.button('Go') and colors and styles:
         for c in colors:
             phrases = get_color_text(c)
             # Remove phrases with negative sentiment scores
-            phrases = [p for p in phrases if TextBlob(p).sentiment.polarity > 0]
+            # phrases = [p for p in phrases if TextBlob(p).sentiment.polarity > 0]
             color_output += phrases
         for _ in range(len(color_output)):
             style_output += [get_style_text(styles)]
@@ -127,7 +127,7 @@ if st.button('Go') and colors and styles:
         final_texts = []
         if color_output:
             for i, c in enumerate(color_output):
-                final_texts += [f'{c}\n\n{style_output[i]}']
+                final_texts += [f'{c.capitalize()}\n\n{style_output[i]}']
 
         while len(final_texts) < 5:
             final_texts += [get_style_text(styles)]
