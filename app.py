@@ -122,9 +122,9 @@ def get_style_text(text):
     )
 
     out = response['choices'][0]['text']
-    if not out.starstwith('\n'):
+    if not out.startswith('\n'):
         out = '\n' + out
-    
+
     return out
 
 
