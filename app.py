@@ -110,6 +110,7 @@ def get_style_text(text):
 st.title('Instagram post generator')
 colors = st.text_input('Colors', help='Separate each style with commas e.g. "green, brown, beige"')
 styles = st.text_input('Styles', help='Separate each style with commas, e.g. "boho, minimalist, Scandi"')
+styles = f'{styles}, {colors}'
 
 if 'final_texts' not in st.session_state:
     st.session_state['final_texts'] = []
