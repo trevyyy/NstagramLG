@@ -47,7 +47,7 @@ use = """A system that writes about the emotions of colors.
 io = """Input: %s
 Output:"""
 
-style = """Write a creative ad for art prints we have designed in the following style:
+style = """Write a creative ad for an art print we have designed in the following style:
 
 Style: %s"""
 
