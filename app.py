@@ -3,49 +3,28 @@ import openai
 import random
 import re
 
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+openai.api_key = "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"
 
-orange = """Input: burnt orange
-Output:
-1. Cheers 🍊
-2. We call this a glow-up 😎
-3. Let's warm things up a bit 🔥
-4. Warm things up 🥵
-5. Feel the love 🧡
-###"""
+color = """Convert text into emojis:
 
-green = """Input: green
-Output:
-1. A fresh start ♻️
-2. Clear the room 🌿
-3. Need some air? 🌳
-4. Upping the O2 🧪
-5. Something new is on the way 🪴
-###"""
+orange: 🍊🧡🟠
 
-blue = """Input: blue
-Output:
-1. Wash out the old 🌀
-2. A rhapsody in blue 🔵
-3. Feelin' blue in a good way 💙
-4. Find your calm 😌
-5. Blue who? 🔹
-###"""
+green: 🌿💚🧩
 
-beige = """Input: beige
-Output:
-1. Beige? Boring? Nope. 🤩
-2. Bring on the beige 🙌
-3. Earth tones, anyone? 🌱
-4. Nothing but neutrals 🤎
-5. When you need something that goes with anything 🤝
-###"""
+blue: 💙🌀🔵
 
-use = """A system that writes about the emotions of colors.
-###"""
+yellow: 💛⚠️🍋    
 
-io = """Input: %s
-Output:"""
+red: 🔥💋🌶
+
+%s:"""
+
+_color = """Convert text into emojis:
+
+Add some zing to your walls with this eye-catching graphic print. The bold purples and playful design will make a statement in any room: 👾
+Feel closer to the ocean with our new water ripple print 🌊 Perfect for your home, office, or any other space that could use a splash of colour: 💙
+This fun, minimalist rainbow hearts print would make the perfect Valentines Day gift for your loved one! The fun and colourful illustration is perfect for adding some happiness to your walls: 🌈
+%s:"""
 
 style = """Write a creative ad for an art print we have designed in the following style:
 
@@ -54,31 +33,28 @@ Style: %s"""
 
 def get_color_text(text):
 
-    prompt = use
-    count = 0
-    for i in [orange, green, blue]:
-        if text not in i:
-            prompt += i
-            count += 1
-    if count < 3:
-        prompt += beige
-    prompt += io
+    # if text in color:
+    #     start = color.index(text)
+    #     end = start + len(text) + 6
+    #     text_to_replace = color[start:end]
+    #     prompt = color.replace(text_to_replace, '') % text
+    # else:
+    #     prompt = color % text
 
     response = openai.Completion.create(
         engine="text-davinci-001",
-        prompt=prompt % text,
+        prompt=color % text.strip('.!?'),
         temperature=1,
-        max_tokens=60,
+        max_tokens=15,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
     )
 
     out = response['choices'][0]['text'].split('\n')
-    out = [i.strip('0123456789. ') for i in out]
     out = [x for x in out if x]
 
-    return out
+    return out[0]
 
 
 def get_style_text(text):
@@ -87,7 +63,7 @@ def get_style_text(text):
         engine="text-davinci-001",
         prompt=style % text.replace(' | ', ', '),
         temperature=1,
-        max_tokens=60,
+        max_tokens=150,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
@@ -116,27 +92,30 @@ if 'final_texts' not in st.session_state:
     st.session_state['final_texts'] = []
 
 if st.button('Go') and colors and styles:
-    color_output = []
-    style_output = []
-    colors = [i.strip() for i in colors.split(',')]
+    final_texts = []
 
     # GPT-3
     with st.spinner('Building ads...'):
-        for c in colors:
-            phrases = get_color_text(c)
-            # Remove phrases with negative sentiment scores
-            # phrases = [p for p in phrases if TextBlob(p).sentiment.polarity > 0]
-            color_output += phrases
-        for _ in range(len(color_output)):
-            style_output += [get_style_text(styles)]
-
-        final_texts = []
-        if color_output:
-            for i, c in enumerate(color_output):
-                final_texts += [f'{c.capitalize()}\n\n{style_output[i]}']
-
-        while len(final_texts) < 5:
+        # emojis = set()
+        # colors = [c.strip() for c in colors.split(',')]
+        # for c in colors:
+        #     color_output = get_color_text(c)
+        #     for e in color_output:
+        #         emojis |= set(e)
+        for _ in range(5):
             final_texts += [get_style_text(styles)]
+        # emojis = [e for e in emojis if len(e.strip()) > 0]
+        #
+        # final_texts = []
+        # k = 5 if len(emojis) > 5 else len(emojis)
+        # colors_to_use = random.sample(emojis, k=k)
+        # if color_output:
+        # for output in style_output:
+        #     final_texts += [f'{output} {get_color_text(output)}']
+            # try:
+            #     final_texts += [f'{output} {colors_to_use[i]}']
+            # except IndexError:
+            #     final_texts += [output]
 
     random.shuffle(final_texts)
     st.session_state['final_texts'] = final_texts
@@ -144,8 +123,3 @@ if st.button('Go') and colors and styles:
 for i, o in enumerate(st.session_state['final_texts']):
     st.write('-' * 10)
     st.write(o)
-    # col1, col2, _ = st.columns((1, 1, 10))
-    # if col1.button('❤️', key=i):
-    #     pass
-    # if col2.button('👎🏼', key=f'{i}_'):
-    #     pass
