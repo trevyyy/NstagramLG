@@ -3,7 +3,7 @@ import openai
 import random
 import re
 
-openai.api_key = "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"
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 color = """Convert text into emojis:
 
